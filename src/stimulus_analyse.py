@@ -79,36 +79,37 @@ def stimulus_analyse(pattern_x, pattern_y, pw, filtertype, plotit):
     end
     
     ## plot subplot 1: intensity profiles for all filtering steps
-    plt.axes(h{1});
+    plt.axes(h[1]);
     hh = plt.plot(pattern_x, pattern_y, 'k', 'linewidth', 2);   # plot unfiltered pattern
-    plt.plot(pattern_x, int_filt(:, mod(praas, 1)==0), 'color', [.7 .7 .7]);         # plot every 1 degree in grey
-    plt.plot(pattern_x, int_filt(:, mod(praas, 5)==0), 'k');    # plot every 5 degrees in black
+    plt.plot(pattern_x, int_filt[:, np.mod(praas, 1)==0], 'color', '#464646');         # plot every 1 degree in grey
+    plt.plot(pattern_x, int_filt[:, np.mod(praas, 5)==0], 'k');    # plot every 5 degrees in black
     uistack(hh, 'top'); # bring unfiltered pattern to the top
     plt.xlabel('visual angle (\circ)');
     plt.ylabel('intensity');
-    plt.xlim([-2*pw 2*pw]);
+    plt.xlim([-2*pw, 2*pw]);
     plt.title(sprintf('#d\\circ black, 1:5:90\\circ acceptance angles', pw/3));
     
+        
     ## subplot 2: distance between maxima
-    plt.axes(h{2}); hold on;
+    plt.axes(h[2]); #hold on;
     plt.plot(praas, int_distmaxs, 'k.');
     plt.xlabel('spatial resolution (hw of acc. angle) (\circ)');
     plt.ylabel('distance between white peaks (\circ)');
-    grid on; grid minor;
+    plt.grid(which='minor');
     
     ## subplot 3: relative amplitude decay
-    plt.axes(h{3}); hold on;
+    plt.axes(h[3]); plt.hold;
     plt.plot(praas, int_relamps, 'k');
     plt.xlabel('opt. resolution (hw of acc. angle) (\circ)');
     plt.ylabel('relative contrast (#)');
-    grid on; grid minor;
+    plt.grid(which='minor');#grid on; grid minor;
     
     ## subplot 4: differential of amplitude decay
-    plt.axes(h{4}); hold on;
-    plt.plot(praas(1:end-1), diff(int_relamps)./diff(praas), 'k');
+    plt.axes(h[4]); plt.hold;
+    plt.plot(praas[0:-1], diff(int_relamps)/diff(praas), 'k'); # was ./
     plt.xlabel('opt. resolution (hw of acc. angle) (\circ)');
     plt.ylabel('change in modulation (#)');
-    grid on; grid minor;
+    plt.grid(which='minor');
     # set(gca, 'xdir', 'reverse')
     
     ## figure 2: example filtering steps
@@ -117,15 +118,15 @@ def stimulus_analyse(pattern_x, pattern_y, pw, filtertype, plotit):
     minlvl = min(pattern_y);
     maxlvl = max(pattern_y);
     
-    reppedimage = repmat(pattern_y, [length(pattern_y) 1]);
+    reppedimage = repmat(pattern_y, [len(pattern_y), 1]);
     scaledimage = 255*(reppedimage - minlvl)/(maxlvl-minlvl);
     image(uint8(scaledimage));
-    plt.axis image off;
+    plt.axis# image off;
     title('unfiltered');
     
-    for hw = 10:10:50
-        subplot(2, 3, hw/10+1);
-        reppedimage = repmat(int_filt(:, praas==hw), [1 size(int_filt, 1)]);
+    for hw in np.arange(10,50+1,10).tolist(): #10:10:50
+        plt.subplot(2, 3, hw/10+1);
+        reppedimage = repmat(int_filt(:, praas==hw), [1, np.size(int_filt, 1)]);
         scaledimage = 255*(reppedimage - minlvl)/(maxlvl-minlvl);
         I = uint8(scaledimage)';
     

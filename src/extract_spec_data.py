@@ -10,7 +10,6 @@ I = pd.read_csv('spec_data.txt',sep='\t')
 I.describe()
 
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 # Plot panels of luminance curves for the measurements
@@ -52,7 +51,6 @@ Ihi.describe()
 
 # Try a version with all wavelengths normalised to the highest value of white.
 # Check if proportions at each increment is similar throughout.
-import numpy as np
 Ihi = I.groupby(['material','dark']).apply['irrad'](lambda x: x - np.mean(x))
 
 # Compare two weight of material. Prefer consistent colours and the blacker min.
